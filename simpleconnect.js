@@ -11,7 +11,6 @@ function RTCSimpleConnection(config, socket) {
   let init = () => {
     dc.onopen = e => {
       (sc = dc).onmessage = e => incoming(JSON.parse(e.data));
-      pc.addEventListener("negotiationneeded", e => pc.createOffer().then(set).catch(fail));
     };
     cc.onopen = e => (cc.onmessage = e => pc.onmessage && pc.onmessage(e)) && pc.onopen && pc.onopen(e);
   };
@@ -20,6 +19,7 @@ function RTCSimpleConnection(config, socket) {
   once("datachannel").then(e => (dc = e.channel) && once("datachannel").then(e => cc = e.channel)).then(init);
   pc.addEventListener("icecandidate", e => sc.send(JSON.stringify({ice: e.candidate})));
   pc.connect = () => pc.createOffer().then(set).catch(fail);
+  pc.addEventListener("negotiationneeded", e => pc.connect());
   pc.send = msg => cc && cc.send(msg);
   return pc;
 }
