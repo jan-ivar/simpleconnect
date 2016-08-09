@@ -11,7 +11,7 @@ function RTCSimpleConnection(config, socket) {
   let init = () => {
     dc.onopen = e => {
       (sc = dc).onmessage = e => incoming(JSON.parse(e.data));
-      pc.onnegotiationneeded = e => pc.createOffer().then(set).catch(fail);
+      pc.addEventListener("negotiationneeded", e => pc.createOffer().then(set).catch(fail));
     };
     cc.onopen = e => (cc.onmessage = e => pc.onmessage && pc.onmessage(e)) && pc.onopen && pc.onopen(e);
   };
